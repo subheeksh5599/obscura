@@ -6,7 +6,7 @@
 
 [![Live demo](https://img.shields.io/badge/●_live-obscura--dun.vercel.app-E84142)](https://obscura-dun.vercel.app)
 [![Canton Devnet](https://img.shields.io/badge/📜_Canton-Devnet-14151a)](https://canton.network)
-[![Daml 2.10](https://img.shields.io/badge/Daml-2.10-14151a)](https://docs.daml.com)
+[![Daml 3.4](https://img.shields.io/badge/Daml-3.4-14151a)](https://docs.daml.com)
 [![License: MIT](https://img.shields.io/badge/license-MIT-E84142.svg)](LICENSE)
 ![Build](https://img.shields.io/badge/build-passing-3fb950)
 ![Stack](https://img.shields.io/badge/Daml·React%2019·TypeScript·Canton-14151a)
@@ -190,7 +190,7 @@ On settlement, a `SettlementReceipt` is created. Both parties hold an immutable,
 
 | Capability | Status |
 |---|---|
-| **Daml contracts** — Offer, Trade, SettlementReceipt | **Real** — compiles with `daml build` |
+| **Daml contracts** — Offer, Trade, SettlementReceipt | **Real** — compiles with `daml build` (SDK 3.4) |
 | **Private orders** — invisible to third parties | **Real** — enforced by Canton's observer model |
 | **Atomic settlement** — both legs or neither | **Real** — Canton's atomic transactions |
 | **Bilateral matching** — counterparty-only visibility | **Real** — two signatories, zero observers |
@@ -236,18 +236,19 @@ Suite result: ok. 7 passed; 0 failed; 0 skipped
 
 ## Run it locally
 
-**Prerequisites:** Daml SDK 2.10+, Node.js 18+, npm.
+**Prerequisites:** Daml SDK 3.4+, Node.js 18+, npm.
 
 ```bash
 git clone https://github.com/subheeksh5599/obscura.git
 cd obscura
 
 # Install Daml SDK
-curl -sSL https://get.daml.com/ | bash -s 2.10.4
+curl -sSL https://get.daml.com/ | bash -s 3.4.11
 
 # Build Daml contracts
 cd daml
 daml build
+# → .daml/dist/obscura-0.1.0.dar
 
 # Run Daml tests
 daml test
@@ -317,7 +318,7 @@ obscura/
 
 ## Tech stack
 
-- **Smart Contracts:** Daml 2.10 — functional language for financial contracts
+- **Smart Contracts:** Daml 3.4 — functional language for financial contracts
 - **Ledger:** Canton Network (Devnet) — privacy-enabled L1, atomic multi-party settlement
 - **Frontend:** React 19, Vite 6, TypeScript (strict)
 - **Design:** TailwindCSS 3 — grid paper layout, Space Grotesk + JetBrains Mono
