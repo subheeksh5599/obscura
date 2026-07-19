@@ -4,7 +4,7 @@
 
 &nbsp;
 
-[![Live demo](https://img.shields.io/badge/●_live-obscura.vercel.app-E84142)](https://obscura.vercel.app)
+[![Live demo](https://img.shields.io/badge/●_live-obscura--dun.vercel.app-E84142)](https://obscura-dun.vercel.app)
 [![Canton Devnet](https://img.shields.io/badge/📜_Canton-Devnet-14151a)](https://canton.network)
 [![Daml 2.10](https://img.shields.io/badge/Daml-2.10-14151a)](https://docs.daml.com)
 [![License: MIT](https://img.shields.io/badge/license-MIT-E84142.svg)](LICENSE)
@@ -16,9 +16,9 @@
 
 Obscura is a private exchange built on Canton Network. Orders are invisible to third parties. Trades are visible only to the two counterparties. Settlement is atomic — both legs execute or neither does. Canton's privacy model enforces this at the protocol level. No ZK proofs. No mixers. Native privacy, natively enforced.
 
-### ▶ Try it at **[obscura.vercel.app](https://obscura.vercel.app)**
+### ▶ Try it at **[obscura-dun.vercel.app](https://obscura-dun.vercel.app)**
 
-**[ Live demo ↗ ](https://obscura.vercel.app)** · **[ Architecture ↓ ](#architecture)** · **[ Run it locally ↓ ](#run-it-locally)**
+**[ Live demo ↗ ](https://obscura-dun.vercel.app)** · **[ Architecture ↓ ](#architecture)** · **[ Run it locally ↓ ](#run-it-locally)**
 
 Built for the Build on Canton Hackathon by Encode Club. MIT licensed.
 
