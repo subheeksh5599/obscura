@@ -5,4 +5,5 @@ dist
 *.dar
 .env
 .vercel
-.vercel
+daml/log
+daml/.daml
