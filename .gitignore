@@ -4,3 +4,4 @@ dist
 .canton
 *.dar
 .env
+.vercel

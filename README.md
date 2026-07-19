@@ -272,7 +272,7 @@ Open `http://localhost:5173` — you'll see the Obscura landing page. Click "Lau
 
 | | |
 |---|---|
-| **Frontend** | **[obscura.vercel.app](https://obscura.vercel.app)** — Vercel |
+| **Frontend** | **[obscura-dun.vercel.app](https://obscura-dun.vercel.app)** — Vercel |
 | **Daml Contracts** | Canton Devnet — deployment address coming soon |
 | **GitHub** | **[github.com/subheeksh5599/obscura](https://github.com/subheeksh5599/obscura)** |
 
