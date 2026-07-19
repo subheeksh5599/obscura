@@ -168,7 +168,7 @@ On settlement, a `SettlementReceipt` is created. Both parties hold an immutable,
 
 **Immutability.** Once settled, the `SettlementReceipt` is immutable on Canton. Both parties hold a verifiable record. Auditable, but only by the parties involved.
 
-**No ZK required.** Unlike DARKLAKE (which needed ZK proofs to hide trade size/direction on Solana), Obscura doesn't need ZK at all. Canton's privacy is native — the ledger itself enforces who can see what.
+**No ZK required.** Canton's privacy is native — the ledger itself enforces who can see what. No zero-knowledge proofs, no mixers, no trusted execution environments. Privacy is built into the protocol, not bolted on top.
 
 ---
 
