@@ -1,0 +1,10 @@
+sdk-version: 2.10.4
+name: obscura
+source: .
+version: 0.1.0
+dependencies:
+  - daml-prim
+  - daml-stdlib
+  - daml-script
+exposed-modules:
+  - Obscura

@@ -1,0 +1,177 @@
+-- Copyright (c) 2026 Obscura
+-- Private Exchange on Canton Network
+
+module Obscura where
+
+import Daml.Finance.Interface.Types.Common.Types (Id, Parties)
+import Daml.Finance.Interface.Types.Date.Types (Date)
+
+-- | An asset that can be traded on the private exchange.
+-- Only the owner and potential counterparties can see the asset details.
+template Asset
+  with
+    issuer : Party          -- Who created this asset
+    owner : Party           -- Current owner
+    symbol : Text           -- Asset symbol (e.g., "TSLA", "USDC")
+    quantity : Decimal      -- Amount held
+    assetType : AssetType   -- What kind of asset
+  where
+    signatory issuer, owner
+    observer []             -- Private: no third-party observers by default
+
+    key (issuer, symbol) : (Party, Text)
+    maintainer key._1
+
+    choice Transfer : ContractId Asset
+      with
+        newOwner : Party
+        amount : Decimal
+      controller owner
+      do
+        assert (amount <= quantity) "Insufficient quantity"
+        assert (amount > 0.0) "Amount must be positive"
+        create this with
+          owner = newOwner
+          quantity = amount
+
+data AssetType
+  = Equity            -- Stock/equity
+  | FixedIncome       -- Bond/debt
+  | Stablecoin        -- USDC, etc.
+  | TokenizedRWA      -- Real-world asset
+  | Derivative        -- Option, swap, forward
+  deriving (Show, Eq)
+
+-- | A private offer to buy or sell an asset.
+-- Only the creator can see the offer details.
+-- When matched, the trade becomes visible to both parties.
+template Offer
+  with
+    creator : Party
+    side : Side             -- Buy or Sell
+    assetSymbol : Text      -- What asset
+    assetType : AssetType   -- Asset category
+    quantity : Decimal      -- How much
+    price : Decimal         -- Price per unit
+    totalValue : Decimal    -- quantity * price
+    currency : Text         -- Payment currency (e.g., "USD")
+    expiresAt : Date        -- Offer expiry
+    status : OfferStatus    -- Current state
+  where
+    signatory creator
+    observer []             -- Private: only creator sees the offer
+
+    key (creator, assetSymbol, side, price) : (Party, Text, Side, Decimal)
+    maintainer key._1
+
+    -- Counterparty accepts the offer, creating a private trade
+    choice Accept : ContractId Trade
+      with
+        counterparty : Party
+      controller counterparty
+      do
+        assert (status == Open) "Offer is not open"
+        create Trade with
+          buyParty = if side == Buy then creator else counterparty
+          sellParty = if side == Sell then creator else counterparty
+          assetSymbol
+          assetType
+          quantity
+          price
+          totalValue
+          currency
+          status = Pending
+
+    -- Creator cancels their own offer
+    choice Cancel : ContractId Offer
+      controller creator
+      do
+        assert (status == Open) "Offer is not open"
+        create this with status = Cancelled
+
+    -- Creator updates the price
+    choice UpdatePrice : ContractId Offer
+      with
+        newPrice : Decimal
+      controller creator
+      do
+        assert (status == Open) "Offer is not open"
+        create this with
+          price = newPrice
+          totalValue = quantity * newPrice
+
+data Side = Buy | Sell
+  deriving (Show, Eq)
+
+data OfferStatus = Open | Cancelled | Matched
+  deriving (Show, Eq)
+
+-- | A private trade between two parties.
+-- Both parties are signatories. No one else can see the trade.
+template Trade
+  with
+    buyParty : Party        -- Who is buying
+    sellParty : Party       -- Who is selling
+    assetSymbol : Text      -- What is being traded
+    assetType : AssetType
+    quantity : Decimal
+    price : Decimal         -- Per unit
+    totalValue : Decimal    -- Total trade value
+    currency : Text         -- Settlement currency
+    status : TradeStatus    -- Current state
+  where
+    signatory buyParty, sellParty
+    observer []             -- Private: only counterparties see the trade
+
+    key (buyParty, sellParty, assetSymbol, price) : (Party, Party, Text, Decimal)
+    maintainer key._1
+
+    -- Settle the trade atomically
+    -- Both parties sign, ensuring atomic delivery vs payment
+    choice Settle : ContractId Trade
+      controller buyParty, sellParty
+      do
+        assert (status == Pending) "Trade is not pending"
+        -- In a real implementation, this would:
+        -- 1. Transfer asset from seller to buyer
+        -- 2. Transfer payment from buyer to seller
+        -- 3. Both happen atomically via Canton's ledger
+        create this with status = Settled
+
+    -- Either party can dispute (before settlement)
+    choice Dispute : ContractId Trade
+      with
+        reason : Text
+      controller buyParty, sellParty
+      do
+        assert (status == Pending) "Trade is not pending"
+        create this with status = Disputed
+
+    -- Resolve a disputed trade
+    choice Resolve : ContractId Trade
+      with
+        resolution : TradeStatus  -- Either Settled or Cancelled
+      controller buyParty, sellParty
+      do
+        assert (status == Disputed) "Trade is not disputed"
+        assert (resolution == Settled || resolution == Cancelled) "Invalid resolution"
+        create this with status = resolution
+
+data TradeStatus = Pending | Settled | Cancelled | Disputed
+  deriving (Show, Eq)
+
+-- | A settlement receipt that proves a trade was executed.
+template SettlementReceipt
+  with
+    tradeId : Text          -- Reference to the Trade contract
+    buyParty : Party
+    sellParty : Party
+    assetSymbol : Text
+    quantity : Decimal
+    price : Decimal
+    totalValue : Decimal
+    currency : Text
+    settledAt : Date
+  where
+    signatory buyParty, sellParty
+    observer []             -- Private receipt
