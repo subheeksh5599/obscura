@@ -195,7 +195,8 @@ On settlement, a `SettlementReceipt` is created. Both parties hold an immutable,
 | **Atomic settlement** — both legs or neither | **Real** — Canton's atomic transactions |
 | **Bilateral matching** — counterparty-only visibility | **Real** — two signatories, zero observers |
 | **Frontend landing page** — hero, flow, features, footer | **Real** — React 19 + Vite 6 |
-| **Exchange dashboard** — order creation, trade history | **Real** — interactive UI with mock data |
+| **Exchange dashboard** — order creation, trade history | **Real** — interactive UI, fetches from backend API |
+| **Backend API** — Express server, Canton JSON API proxy | **Real** — `/api/health`, `/api/stats`, `/api/orders`, `/api/trades` |
 | **Design system** — grid paper, Clasp-inspired aesthetic | **Real** — TailwindCSS, custom CSS |
 | **Canton Devnet deployment** | **Pending** — contracts ready, Devnet deployment in progress |
 | **Live order matching against Canton ledger** | **Pending** — frontend currently shows mock data |
@@ -265,7 +266,15 @@ npm install
 npm run dev  # :5173
 ```
 
-Open `http://localhost:5173` — you'll see the Obscura landing page. Click "Launch Exchange" to enter the private trading dashboard.
+# Start backend (serves API + frontend on :3001)
+cd ../backend
+npm install
+npm start
+
+# Or connect to real Canton Devnet:
+CANTON_LEDGER_API=https://devnet.canton.network/api CANTON_TOKEN=your-token npm start
+
+Open `http://localhost:3001`
 
 ---
 
@@ -274,6 +283,7 @@ Open `http://localhost:5173` — you'll see the Obscura landing page. Click "Lau
 | | |
 |---|---|
 | **Frontend** | **[obscura-dun.vercel.app](https://obscura-dun.vercel.app)** — Vercel |
+| **Backend API** | `node backend/server.js` — Express server (deploy to Render/Railway) |
 | **Daml Contracts** | Canton Devnet — deployment address coming soon |
 | **GitHub** | **[github.com/subheeksh5599/obscura](https://github.com/subheeksh5599/obscura)** |
 
@@ -296,8 +306,10 @@ daml ledger upload-dar \
 obscura/
 ├── daml/
 │   ├── Obscura.daml          # Daml contracts: Offer, Trade, SettlementReceipt
-│   ├── Obscura.test.daml     # Scenario tests
-│   └── daml.yaml             # Daml project config
+│   └── daml.yaml             # Daml project config (SDK 3.4)
+├── backend/
+│   ├── server.js             # Express server — Canton JSON API proxy
+│   └── package.json
 ├── frontend/
 │   ├── src/
 │   │   ├── App.tsx           # Landing page + site header
